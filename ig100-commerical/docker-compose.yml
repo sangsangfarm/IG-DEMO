@@ -1,0 +1,95 @@
+version: '3.7'
+services:
+  IG100:
+    image: sangsangfarm.azurecr.io/ig100:dev
+    ports:
+      - '82:80'
+    environment:
+      - IOTEDGE_DEVICEID=IG100-DEMO-COMMERICAL
+      - USE_WATERLEVEL_PULL_DOWN=true
+      - TEST_MODE=true
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - MariaDB
+      - API
+    networks:
+      - ig100-demo-commerical-network
+
+  MariaDB:
+    image: linuxserver/mariadb:10.6.10
+    environment:
+      - GUID=1000
+      - PUID=1000
+      - MYSQL_DATABASE=database
+      - MYSQL_USER=sangsang
+      - MYSQL_PASSWORD=imggd12!@#
+      - MYSQL_ROOT_PASSWORD=imggd12!@#
+      - TZ=Asia/Seoul
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "mysqladmin ping -pimggd12!@#  | grep 'mysqld is alive'  || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./mariaDB:/config
+    networks:
+      - ig100-demo-commerical-network
+
+  PhpMyAdmin:
+    image: phpmyadmin:5.2.1
+    ports:
+      - '8002:80'
+    environment:
+      - PMA_HOST=MariaDB
+      - PMA_PORT=3306
+      - TZ=Asia/Seoul
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "curl -f http://localhost || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./mariaDB:/config
+    depends_on:
+      - MariaDB
+    networks:
+      - ig100-demo-commerical-network
+
+  API:
+    image: sangsangfarm.azurecr.io/api:dev
+    ports:
+      - '8082:80'
+    environment:
+      - PMA_HOST=MariaDB
+      - PMA_PORT=3306
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./mariaDB:/config
+    depends_on:
+      - MariaDB
+    networks:
+      - ig100-demo-commerical-network
+
+networks:
+  ig100-demo-commerical-network:
+    driver: bridge
