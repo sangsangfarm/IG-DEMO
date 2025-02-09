@@ -1,9 +1,21 @@
 version: '3.7'
 services:
-  IG100:
-    image: sangsangfarm.azurecr.io/ig100:dev
+  nginx:
+    image: nginx:alpine
     ports:
       - '8002:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/config.conf
+    networks:
+      - ig100-commerical-private-demo-network
+    depends_on:
+      - IG100
+      - PhpMyAdmin
+      - MariaDB
+      - API
+
+  IG100:
+    image: sangsangfarm.azurecr.io/ig100:dev
     environment:
       - IOTEDGE_DEVICEID=IG100-COMMERICAL-PRIVATE-DEMO
       - USE_WATERLEVEL_PULL_DOWN=true
@@ -24,8 +36,6 @@ services:
 
   API:
     image: sangsangfarm.azurecr.io/api:dev
-    ports:
-      - '8102:80'
     environment:
       - PMA_HOST=MariaDB
       - PMA_PORT=3306
@@ -44,8 +54,6 @@ services:
 
   PhpMyAdmin:
     image: phpmyadmin:5.2.1
-    ports:
-      - '8202:80'
     environment:
       - PMA_HOST=MariaDB
       - PMA_PORT=3306
