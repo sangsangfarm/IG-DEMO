@@ -3,9 +3,9 @@ services:
   IG100:
     image: sangsangfarm.azurecr.io/ig100:dev
     ports:
-      - '81:80'
+      - '9002:80'
     environment:
-      - IOTEDGE_DEVICEID=IG100-DEMO-BASIC
+      - IOTEDGE_DEVICEID=IG100-COMMERICAL-PUBLIC-DEMO
       - USE_WATERLEVEL_PULL_DOWN=true
       - TEST_MODE=true
       - TZ=Asia/Seoul
@@ -20,7 +20,51 @@ services:
       - MariaDB
       - API
     networks:
-      - ig100-network
+      - ig100-commerical-public-demo-network
+
+  API:
+    image: sangsangfarm.azurecr.io/api:dev
+    ports:
+      - '9102:80'
+    environment:
+      - PMA_HOST=MariaDB
+      - PMA_PORT=3306
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./mariaDB:/config
+    depends_on:
+      - MariaDB
+    networks:
+      - ig100-commerical-public-demo-network
+
+  PhpMyAdmin:
+    image: phpmyadmin:5.2.1
+    ports:
+      - '9202:80'
+    environment:
+      - PMA_HOST=MariaDB
+      - PMA_PORT=3306
+      - TZ=Asia/Seoul
+    healthcheck:
+      test:
+        [
+          'CMD-SHELL',
+          "curl -f http://localhost || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./mariaDB:/config
+    depends_on:
+      - MariaDB
+    networks:
+      - ig100-commerical-public-demo-network
 
   MariaDB:
     image: linuxserver/mariadb:10.6.10
@@ -44,52 +88,8 @@ services:
     volumes:
       - ./mariaDB:/config
     networks:
-      - ig100-network
-
-  PhpMyAdmin:
-    image: phpmyadmin:5.2.1
-    ports:
-      - '8001:80'
-    environment:
-      - PMA_HOST=MariaDB
-      - PMA_PORT=3306
-      - TZ=Asia/Seoul
-    healthcheck:
-      test:
-        [
-          'CMD-SHELL',
-          "curl -f http://localhost || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./mariaDB:/config
-    depends_on:
-      - MariaDB
-    networks:
-      - ig100-network
-
-  API:
-    image: sangsangfarm.azurecr.io/api:dev
-    ports:
-      - '8081:80'
-    environment:
-      - PMA_HOST=MariaDB
-      - PMA_PORT=3306
-      - TZ=Asia/Seoul
-    healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost/health']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./mariaDB:/config
-    depends_on:
-      - MariaDB
-    networks:
-      - ig100-network
+      - ig100-commerical-public-demo-network
 
 networks:
-  ig100-network:
+  ig100-commerical-public-demo-network:
     driver: bridge
