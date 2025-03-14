@@ -1,0 +1,55 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - '9004:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/config.conf
+    networks:
+      - ig400-public-demo-network
+    depends_on:
+      - IG400
+      - Postgresql
+
+  IG400:
+    image: sangsangfarm.azurecr.io/ig400:dev
+    environment:
+      - IOTEDGE_DEVICEID=IG400-PUBLIC-DEMO
+      - NODE_ENV=demo
+      - CONCENTRATE_TANK_NUMBER=7
+      - NUTRIENT_TANK_NUMBER=4
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      - Postgresql
+    networks:
+      - ig400-public-demo-network
+
+  Postgresql:
+    image: postgres:17.2
+    environment:
+      - POSTGRES_DB=database
+      - POSTGRES_USER=sangsang
+      - POSTGRES_PASSWORD=imggd12!@#
+      - TZ=Asia/Seoul
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sangsang -d database']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - ig400-public-demo-network
+
+networks:
+  ig400-public-demo-network:
+    driver: bridge

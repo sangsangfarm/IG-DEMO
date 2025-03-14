@@ -10,6 +10,7 @@ cp $PWD/private/ig100-research-private/default_twin.log $PWD/private/ig100-resea
 docker compose -f $PWD/private/ig100-basic-private/docker-compose.yml up -d
 docker compose -f $PWD/private/ig100-commerical-private/docker-compose.yml up -d
 docker compose -f $PWD/private/ig100-research-private/docker-compose.yml up -d
+docker compose -f $PWD/private/ig400-private/docker-compose.yml up -d
 
 mkdir -p $PWD/public/ig100-basic-public/logs
 mkdir -p $PWD/public/ig100-commerical-public/logs
@@ -21,6 +22,7 @@ cp $PWD/public/ig100-research-public/default_twin.log $PWD/public/ig100-research
 docker compose -f $PWD/public/ig100-basic-public/docker-compose.yml up -d
 docker compose -f $PWD/public/ig100-commerical-public/docker-compose.yml up -d
 docker compose -f $PWD/public/ig100-research-public/docker-compose.yml up -d
+docker compose -f $PWD/public/ig400-public/docker-compose.yml up -d
 " > $PWD/start.sh
 sudo chmod +x $PWD/start.sh
 
@@ -29,9 +31,12 @@ echo "make stop.sh"
 echo "docker compose -f $PWD/private/ig100-basic-private/docker-compose.yml down
 docker compose -f $PWD/private/ig100-commerical-private/docker-compose.yml down
 docker compose -f $PWD/private/ig100-research-private/docker-compose.yml down
+docker compose -f $PWD/private/ig400-private/docker-compose.yml up -d
+
 docker compose -f $PWD/public/ig100-basic-public/docker-compose.yml down
 docker compose -f $PWD/public/ig100-commerical-public/docker-compose.yml down
 docker compose -f $PWD/public/ig100-research-public/docker-compose.yml down
+docker compose -f $PWD/public/ig400-public/docker-compose.yml up -d
 " > $PWD/stop.sh
 sudo chmod +x $PWD/stop.sh
 
