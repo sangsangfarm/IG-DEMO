@@ -31,12 +31,12 @@ echo "make stop.sh"
 echo "docker compose -f $PWD/private/ig100-basic-private/docker-compose.yml down
 docker compose -f $PWD/private/ig100-commerical-private/docker-compose.yml down
 docker compose -f $PWD/private/ig100-research-private/docker-compose.yml down
-docker compose -f $PWD/private/ig400-private/docker-compose.yml up -d
+docker compose -f $PWD/private/ig400-private/docker-compose.yml up down
 
 docker compose -f $PWD/public/ig100-basic-public/docker-compose.yml down
 docker compose -f $PWD/public/ig100-commerical-public/docker-compose.yml down
 docker compose -f $PWD/public/ig100-research-public/docker-compose.yml down
-docker compose -f $PWD/public/ig400-public/docker-compose.yml up -d
+docker compose -f $PWD/public/ig400-public/docker-compose.yml up down
 " > $PWD/stop.sh
 sudo chmod +x $PWD/stop.sh
 
