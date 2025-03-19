@@ -13,6 +13,11 @@ services:
       - PhpMyAdmin
       - MariaDB
       - API
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   IG100:
     image: sangsangfarm.azurecr.io/ig100:dev
@@ -35,6 +40,11 @@ services:
       - API
     networks:
       - ig100-research-public-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   API:
     image: sangsangfarm.azurecr.io/api:dev
@@ -53,6 +63,11 @@ services:
       - MariaDB
     networks:
       - ig100-research-public-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   PhpMyAdmin:
     image: phpmyadmin:5.2.1
@@ -75,6 +90,11 @@ services:
       - MariaDB
     networks:
       - ig100-research-public-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   MariaDB:
     image: linuxserver/mariadb:10.6.10
@@ -99,6 +119,11 @@ services:
       - ./mariaDB:/config
     networks:
       - ig100-research-public-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
 networks:
   ig100-research-public-demo-network:

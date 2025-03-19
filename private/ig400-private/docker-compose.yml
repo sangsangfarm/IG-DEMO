@@ -11,6 +11,11 @@ services:
     depends_on:
       - IG400
       - Postgresql
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   IG400:
     image: sangsangfarm.azurecr.io/ig400:dev
@@ -31,6 +36,11 @@ services:
       - Postgresql
     networks:
       - ig400-private-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
   Postgresql:
     image: postgres:17.2
@@ -49,6 +59,11 @@ services:
       start_period: 10s
     networks:
       - ig400-private-demo-network
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
 
 networks:
   ig400-private-demo-network:
